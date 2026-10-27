@@ -715,7 +715,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportExcelSubtitle.
   ///
   /// In tr, this message translates to:
-  /// **'Tüm harcamaları .xlsx dosyası olarak kaydet'**
+  /// **'Tüm harcama ve gelirleri .xlsx dosyası olarak kaydet'**
   String get exportExcelSubtitle;
 
   /// No description provided for @exportSaved.
@@ -733,7 +733,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportEmpty.
   ///
   /// In tr, this message translates to:
-  /// **'Aktarılacak harcama yok'**
+  /// **'Aktarılacak kayıt yok'**
   String get exportEmpty;
 
   /// No description provided for @sheetExpenses.
@@ -741,6 +741,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Harcamalar'**
   String get sheetExpenses;
+
+  /// No description provided for @sheetIncomes.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ek gelirler'**
+  String get sheetIncomes;
 
   /// No description provided for @sheetSummary.
   ///
@@ -783,6 +789,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Maaş (₺)'**
   String get columnSalary;
+
+  /// No description provided for @columnExtraIncome.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ek gelir (₺)'**
+  String get columnExtraIncome;
 
   /// No description provided for @columnSpent.
   ///

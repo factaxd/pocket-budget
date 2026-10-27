@@ -121,12 +121,13 @@
   "deleteRecurringBody": "Bundan sonra otomatik eklenmez. Daha önce eklenenler kalır.",
 
   "exportExcel": "Excel'e aktar",
-  "exportExcelSubtitle": "Tüm harcamaları .xlsx dosyası olarak kaydet",
+  "exportExcelSubtitle": "Tüm harcama ve gelirleri .xlsx dosyası olarak kaydet",
   "exportSaved": "Excel dosyası kaydedildi",
   "exportFailed": "Dosya kaydedilemedi. Tekrar dene.",
-  "exportEmpty": "Aktarılacak harcama yok",
+  "exportEmpty": "Aktarılacak kayıt yok",
 
   "sheetExpenses": "Harcamalar",
+  "sheetIncomes": "Ek gelirler",
   "sheetSummary": "Dönem özeti",
   "columnDate": "Tarih",
   "columnCategory": "Kategori",
@@ -134,6 +135,7 @@
   "columnAmount": "Tutar (₺)",
   "columnPeriod": "Dönem",
   "columnSalary": "Maaş (₺)",
+  "columnExtraIncome": "Ek gelir (₺)",
   "columnSpent": "Harcanan (₺)",
   "columnRemaining": "Kalan (₺)",
   "exportFileName": "cuzdan-harcamalar"

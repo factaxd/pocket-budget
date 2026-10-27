@@ -338,7 +338,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get exportExcelSubtitle =>
-      'Tüm harcamaları .xlsx dosyası olarak kaydet';
+      'Tüm harcama ve gelirleri .xlsx dosyası olarak kaydet';
 
   @override
   String get exportSaved => 'Excel dosyası kaydedildi';
@@ -347,10 +347,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get exportFailed => 'Dosya kaydedilemedi. Tekrar dene.';
 
   @override
-  String get exportEmpty => 'Aktarılacak harcama yok';
+  String get exportEmpty => 'Aktarılacak kayıt yok';
 
   @override
   String get sheetExpenses => 'Harcamalar';
+
+  @override
+  String get sheetIncomes => 'Ek gelirler';
 
   @override
   String get sheetSummary => 'Dönem özeti';
@@ -372,6 +375,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get columnSalary => 'Maaş (₺)';
+
+  @override
+  String get columnExtraIncome => 'Ek gelir (₺)';
 
   @override
   String get columnSpent => 'Harcanan (₺)';
