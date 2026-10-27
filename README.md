@@ -17,12 +17,12 @@
 
 ## Features
 
-- **Remaining balance at a glance.** The summary shows what is left of this period's salary, how much has been spent, and a daily limit that keeps you on budget until payday.
+- **Remaining balance at a glance.** The summary shows what is left of this period's salary, how much has been spent, and how many days are left until payday.
 - **Custom payday.** Periods run from payday to payday (for example the 15th to the 14th), not just calendar months. Short months are handled automatically.
 - **Fast expense entry.** Type the amount, tap a category, done. Shortcuts for today and yesterday, and an optional note.
 - **Colored categories.** Twelve categories, each with its own color and icon, plus a breakdown of where the money went.
 - **Calendar view.** See daily totals and category dots for every day of the month, and tap a day to see its expenses.
-- **Recurring expenses.** Rent, bills and subscriptions are added automatically on the same day every month, including months the app was not opened.
+- **Recurring expenses.** Choose "every month" while adding an expense, and rent, bills or subscriptions are added automatically on the same day each month, including months the app was not opened.
 - **Undo.** Swipe an expense away to delete it, and undo if it was a mistake.
 - **Excel export.** Save every expense and a per-period summary as an `.xlsx` file.
 - **Light and dark themes**, following the system or set manually.
