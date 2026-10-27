@@ -1,6 +1,7 @@
 import 'package:pocket_budget/domain/expense_category.dart';
+import 'package:pocket_budget/domain/ledger_entry.dart';
 
-class Expense {
+class Expense implements LedgerEntry {
   const Expense({
     this.id,
     required this.amount,
@@ -11,19 +12,26 @@ class Expense {
     this.recurringId,
   });
 
+  @override
   final int? id;
 
-  /// Amount in kuruş.
+  @override
   final int amount;
+
+  @override
   final ExpenseCategory category;
+
+  @override
   final String? note;
 
-  /// Calendar date of the expense, without a time component.
   final DateTime spentOn;
 
-  /// Set by the database; used to keep the order of expenses within a day stable.
+  @override
   final DateTime? createdAt;
 
   /// The recurring expense that added this one, if any.
   final int? recurringId;
+
+  @override
+  DateTime get date => spentOn;
 }

@@ -3,16 +3,20 @@ import 'package:intl/intl.dart';
 
 import 'package:pocket_budget/core/money.dart';
 import 'package:pocket_budget/core/theme/category_style.dart';
+import 'package:pocket_budget/core/theme/cuzdan_colors.dart';
 import 'package:pocket_budget/domain/expense.dart';
 import 'package:pocket_budget/domain/expense_category.dart';
+import 'package:pocket_budget/domain/income.dart';
 
 /// A Monday-first month calendar. Days with spending show their total
-/// and a dot for each category spent on (up to three).
+/// and a dot for each category spent on (up to three). Days with extra
+/// income get a green tint, and show the income when nothing was spent.
 class MonthGrid extends StatelessWidget {
   const MonthGrid({
     super.key,
     required this.month,
     required this.expenses,
+    this.incomes = const [],
     required this.selectedDay,
     required this.today,
     required this.onDaySelected,
@@ -20,6 +24,7 @@ class MonthGrid extends StatelessWidget {
 
   final DateTime month;
   final List<Expense> expenses;
+  final List<Income> incomes;
   final DateTime selectedDay;
   final DateTime today;
   final ValueChanged<DateTime> onDaySelected;
@@ -35,11 +40,16 @@ class MonthGrid extends StatelessWidget {
 
     final totals = <int, int>{};
     final categories = <int, List<ExpenseCategory>>{};
+    final incomeTotals = <int, int>{};
     for (final expense in expenses) {
       final day = expense.spentOn.day;
       totals.update(day, (sum) => sum + expense.amount, ifAbsent: () => expense.amount);
       final dayCategories = categories.putIfAbsent(day, () => []);
       if (!dayCategories.contains(expense.category)) dayCategories.add(expense.category);
+    }
+    for (final income in incomes) {
+      final day = income.receivedOn.day;
+      incomeTotals.update(day, (sum) => sum + income.amount, ifAbsent: () => income.amount);
     }
 
     // 2026-01-05 is a Monday; used only to print weekday names.
@@ -77,6 +87,7 @@ class MonthGrid extends StatelessWidget {
               _DayCell(
                 date: DateTime(month.year, month.month, day),
                 total: totals[day] ?? 0,
+                income: incomeTotals[day] ?? 0,
                 categories: (categories[day] ?? const []).take(_maxDots).toList(),
                 selected: selectedDay == DateTime(month.year, month.month, day),
                 today: today,
@@ -93,6 +104,7 @@ class _DayCell extends StatelessWidget {
   const _DayCell({
     required this.date,
     required this.total,
+    required this.income,
     required this.categories,
     required this.selected,
     required this.today,
@@ -101,6 +113,7 @@ class _DayCell extends StatelessWidget {
 
   final DateTime date;
   final int total;
+  final int income;
   final List<ExpenseCategory> categories;
   final bool selected;
   final DateTime today;
@@ -117,11 +130,17 @@ class _DayCell extends StatelessWidget {
         : isFuture
             ? scheme.onSurfaceVariant.withValues(alpha: 0.6)
             : scheme.onSurface;
+    final positive = context.cuzdanColors.positive;
+    final background = selected
+        ? scheme.primary
+        : income > 0
+            ? positive.withValues(alpha: theme.brightness == Brightness.light ? 0.12 : 0.18)
+            : Colors.transparent;
 
     return Padding(
       padding: const EdgeInsets.all(2),
       child: Material(
-        color: selected ? scheme.primary : Colors.transparent,
+        color: background,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
           side: isToday && !selected
@@ -141,11 +160,16 @@ class _DayCell extends StatelessWidget {
               const SizedBox(height: 2),
               SizedBox(
                 height: 14,
-                child: total > 0
+                child: total > 0 || income > 0
                     ? Text(
-                        Money.formatCompact(total),
+                        total > 0 ? Money.formatCompact(total) : '+${Money.formatCompact(income)}',
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: selected ? scheme.onPrimary : scheme.onSurfaceVariant,
+                          color: selected
+                              ? scheme.onPrimary
+                              : total > 0
+                                  ? scheme.onSurfaceVariant
+                                  : positive,
+                          fontWeight: total > 0 ? null : FontWeight.w700,
                           fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       )

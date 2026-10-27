@@ -2,55 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pocket_budget/core/money.dart';
+import 'package:pocket_budget/core/theme/cuzdan_colors.dart';
 import 'package:pocket_budget/domain/expense.dart';
-import 'package:pocket_budget/features/expense/expense_sheet.dart';
+import 'package:pocket_budget/domain/income.dart';
+import 'package:pocket_budget/domain/ledger_entry.dart';
+import 'package:pocket_budget/features/entry/entry_sheet.dart';
 import 'package:pocket_budget/features/shared/category_avatar.dart';
 import 'package:pocket_budget/features/shared/date_labels.dart';
-import 'package:pocket_budget/features/shared/expense_deleted_snack_bar.dart';
+import 'package:pocket_budget/features/shared/entry_deleted_snack_bar.dart';
 import 'package:pocket_budget/l10n/l10n.dart';
 import 'package:pocket_budget/providers.dart';
 
-/// Expenses in a rounded group. Tap a row to edit it, swipe it left to delete.
-class ExpenseList extends ConsumerStatefulWidget {
-  const ExpenseList({super.key, required this.expenses, this.showDate = false});
+/// Expenses and incomes in a rounded group. Tap a row to edit it, swipe it left to delete.
+class EntryList extends ConsumerStatefulWidget {
+  const EntryList({super.key, required this.entries, this.showDate = false});
 
-  final List<Expense> expenses;
+  final List<LedgerEntry> entries;
 
-  /// Shows each expense's day under its amount, for lists that span several days.
+  /// Shows each entry's day under its amount, for lists that span several days.
   final bool showDate;
 
   @override
-  ConsumerState<ExpenseList> createState() => _ExpenseListState();
+  ConsumerState<EntryList> createState() => _EntryListState();
 }
 
-class _ExpenseListState extends ConsumerState<ExpenseList> {
+/// Expenses and incomes live in separate tables, so ids alone can collide.
+(bool, int?) _keyOf(LedgerEntry entry) => (entry is Income, entry.id);
+
+class _EntryListState extends ConsumerState<EntryList> {
   /// Swiped rows leave the tree at once, before the database refresh arrives.
-  final _dismissedIds = <int>{};
+  final _dismissed = <(bool, int?)>{};
 
   @override
-  void didUpdateWidget(ExpenseList oldWidget) {
+  void didUpdateWidget(EntryList oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Once the refreshed list no longer has the row, forget it so an undo can bring it back.
-    _dismissedIds.removeWhere((id) => !widget.expenses.any((expense) => expense.id == id));
+    _dismissed.removeWhere((key) => !widget.entries.any((entry) => _keyOf(entry) == key));
   }
 
-  void _delete(Expense expense) {
-    setState(() => _dismissedIds.add(expense.id!));
-    final actions = ref.read(expenseActionsProvider);
-    actions.delete(expense);
-    showExpenseDeletedSnackBar(
+  void _delete(LedgerEntry entry) {
+    setState(() => _dismissed.add(_keyOf(entry)));
+    final actions = ref.read(entryActionsProvider);
+    actions.delete(entry);
+    showEntryDeletedSnackBar(
       messenger: ScaffoldMessenger.of(context),
       l10n: context.l10n,
       actions: actions,
-      expense: expense,
+      entry: entry,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final visible = [
-      for (final expense in widget.expenses)
-        if (!_dismissedIds.contains(expense.id)) expense,
+      for (final entry in widget.entries)
+        if (!_dismissed.contains(_keyOf(entry))) entry,
     ];
     if (visible.isEmpty) return const SizedBox.shrink();
 
@@ -62,12 +68,12 @@ class _ExpenseListState extends ConsumerState<ExpenseList> {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          for (final (index, expense) in visible.indexed) ...[
+          for (final (index, entry) in visible.indexed) ...[
             if (index > 0) const Divider(indent: 72),
             Dismissible(
-              key: ValueKey('expense-${expense.id}'),
+              key: ValueKey(_keyOf(entry)),
               direction: DismissDirection.endToStart,
-              onDismissed: (_) => _delete(expense),
+              onDismissed: (_) => _delete(entry),
               background: ColoredBox(
                 color: scheme.error,
                 child: Align(
@@ -78,7 +84,7 @@ class _ExpenseListState extends ConsumerState<ExpenseList> {
                   ),
                 ),
               ),
-              child: ExpenseTile(expense: expense, today: widget.showDate ? today : null),
+              child: EntryTile(entry: entry, today: widget.showDate ? today : null),
             ),
           ],
         ],
@@ -87,32 +93,37 @@ class _ExpenseListState extends ConsumerState<ExpenseList> {
   }
 }
 
-class ExpenseTile extends StatelessWidget {
-  const ExpenseTile({super.key, required this.expense, this.today});
+class EntryTile extends StatelessWidget {
+  const EntryTile({super.key, required this.entry, this.today});
 
   /// Row height including the divider between rows; used to fit rows on screen.
   static const height = 65.0;
 
-  final Expense expense;
+  final LedgerEntry entry;
 
-  /// When set, the expense's day is shown relative to this date.
+  /// When set, the entry's day is shown relative to this date.
   final DateTime? today;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final categoryLabel = expense.category.label(l10n);
-    final note = expense.note;
+    final categoryLabel = entry.category.label(l10n);
+    final note = entry.note;
+    final isIncome = entry is Income;
+    final isRecurring = switch (entry) {
+      Expense(:final recurringId) => recurringId != null,
+      _ => false,
+    };
 
     return InkWell(
-      onTap: () => showExpenseSheet(context, expense: expense, defaultDate: expense.spentOn),
+      onTap: () => showEntrySheet(context, entry: entry, defaultDate: entry.date),
       child: Container(
         height: height - 1,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            CategoryAvatar(category: expense.category),
+            CategoryAvatar(category: entry.category),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -128,7 +139,7 @@ class ExpenseTile extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (expense.recurringId != null) ...[
+                      if (isRecurring) ...[
                         const SizedBox(width: 6),
                         Icon(
                           Icons.repeat_rounded,
@@ -155,15 +166,18 @@ class ExpenseTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  Money.format(expense.amount),
+                  // Incomes carry a plus sign and the positive color, so money
+                  // coming in never looks like another expense.
+                  isIncome ? '+${Money.format(entry.amount)}' : Money.format(entry.amount),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
+                    color: isIncome ? context.cuzdanColors.positive : null,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
                 if (today case final today?)
                   Text(
-                    formatDayLabel(expense.spentOn, l10n, today: today),
+                    formatDayLabel(entry.date, l10n, today: today),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),

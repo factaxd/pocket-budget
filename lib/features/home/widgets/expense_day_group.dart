@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_budget/core/money.dart';
 import 'package:pocket_budget/domain/expense.dart';
 import 'package:pocket_budget/features/shared/date_labels.dart';
-import 'package:pocket_budget/features/shared/expense_list.dart';
+import 'package:pocket_budget/features/shared/entry_list.dart';
 import 'package:pocket_budget/l10n/l10n.dart';
 
 class ExpenseDay {
@@ -63,7 +63,7 @@ class ExpenseDayGroup extends StatelessWidget {
             ],
           ),
         ),
-        ExpenseList(expenses: day.expenses),
+        EntryList(entries: day.expenses),
       ],
     );
   }

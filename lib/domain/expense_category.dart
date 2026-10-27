@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-enum ExpenseCategory {
+import 'package:pocket_budget/domain/entry_category.dart';
+
+enum ExpenseCategory implements EntryCategory {
   food(Icons.restaurant_rounded, Color(0xFFE5484D)),
   coffee(Icons.local_cafe_rounded, Color(0xFF8D6248)),
   groceries(Icons.shopping_basket_rounded, Color(0xFF5BA34F)),
@@ -16,9 +18,10 @@ enum ExpenseCategory {
 
   const ExpenseCategory(this.icon, this.color);
 
+  @override
   final IconData icon;
 
-  /// Base hue of the category; see `ExpenseCategoryStyle` for theme-aware shades.
+  @override
   final Color color;
 
   static ExpenseCategory fromName(String name) =>

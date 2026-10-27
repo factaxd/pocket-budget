@@ -60,7 +60,7 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
 
     setState(() => _saving = true);
     final note = _noteController.text.trim();
-    await ref.read(expenseActionsProvider).updateRecurring(RecurringExpense(
+    await ref.read(entryActionsProvider).updateRecurring(RecurringExpense(
           id: widget.recurring.id,
           amount: Money.parse(_amountController.text)!,
           category: _category,
@@ -93,7 +93,7 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
       ),
     );
     if (confirmed != true) return;
-    await ref.read(expenseActionsProvider).deleteRecurring(widget.recurring);
+    await ref.read(entryActionsProvider).deleteRecurring(widget.recurring);
     navigator.pop();
   }
 
@@ -129,7 +129,8 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
               const SizedBox(height: 20),
               Text(l10n.categoryLabel, style: theme.textTheme.titleSmall),
               const SizedBox(height: 8),
-              CategoryPicker(
+              CategoryPicker<ExpenseCategory>(
+                categories: ExpenseCategory.values,
                 selected: _category,
                 onSelected: (category) => setState(() => _category = category),
               ),

@@ -10,6 +10,7 @@ class CuzdanColors extends ThemeExtension<CuzdanColors> {
     required this.heroTrack,
     required this.heroFill,
     required this.heroNegative,
+    required this.heroPositive,
     required this.positive,
   });
 
@@ -20,6 +21,7 @@ class CuzdanColors extends ThemeExtension<CuzdanColors> {
     heroTrack: Color(0xFF553753),
     heroFill: Color(0xFFE7C68B),
     heroNegative: Color(0xFFFF9AA2),
+    heroPositive: Color(0xFF9EE0B0),
     positive: Color(0xFF4F7D5F),
   );
 
@@ -30,6 +32,7 @@ class CuzdanColors extends ThemeExtension<CuzdanColors> {
     heroTrack: Color(0xFF55394F),
     heroFill: Color(0xFFE7C68B),
     heroNegative: Color(0xFFFF9AA2),
+    heroPositive: Color(0xFF9EE0B0),
     positive: Color(0xFF9CC5A8),
   );
 
@@ -39,6 +42,9 @@ class CuzdanColors extends ThemeExtension<CuzdanColors> {
   final Color heroTrack;
   final Color heroFill;
   final Color heroNegative;
+
+  /// Extra income on the balance card.
+  final Color heroPositive;
   final Color positive;
 
   @override
@@ -49,6 +55,7 @@ class CuzdanColors extends ThemeExtension<CuzdanColors> {
     Color? heroTrack,
     Color? heroFill,
     Color? heroNegative,
+    Color? heroPositive,
     Color? positive,
   }) {
     return CuzdanColors(
@@ -58,6 +65,7 @@ class CuzdanColors extends ThemeExtension<CuzdanColors> {
       heroTrack: heroTrack ?? this.heroTrack,
       heroFill: heroFill ?? this.heroFill,
       heroNegative: heroNegative ?? this.heroNegative,
+      heroPositive: heroPositive ?? this.heroPositive,
       positive: positive ?? this.positive,
     );
   }
@@ -72,6 +80,7 @@ class CuzdanColors extends ThemeExtension<CuzdanColors> {
       heroTrack: Color.lerp(heroTrack, other.heroTrack, t)!,
       heroFill: Color.lerp(heroFill, other.heroFill, t)!,
       heroNegative: Color.lerp(heroNegative, other.heroNegative, t)!,
+      heroPositive: Color.lerp(heroPositive, other.heroPositive, t)!,
       positive: Color.lerp(positive, other.positive, t)!,
     );
   }

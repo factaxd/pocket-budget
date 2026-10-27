@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:pocket_budget/domain/expense_category.dart';
+import 'package:pocket_budget/domain/entry_category.dart';
 
-extension ExpenseCategoryStyle on ExpenseCategory {
+extension EntryCategoryStyle on EntryCategory {
   /// Category color for icons and text, kept dark enough on light surfaces
   /// and light enough on dark ones to stay readable.
   Color foreground(Brightness brightness) {

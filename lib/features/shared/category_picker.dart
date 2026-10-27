@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 
 import 'package:pocket_budget/core/theme/category_style.dart';
-import 'package:pocket_budget/domain/expense_category.dart';
+import 'package:pocket_budget/domain/entry_category.dart';
 import 'package:pocket_budget/features/shared/category_avatar.dart';
 import 'package:pocket_budget/l10n/l10n.dart';
 
 /// Four-column grid of category icons; the chosen one turns solid.
-class CategoryPicker extends StatelessWidget {
-  const CategoryPicker({super.key, required this.selected, required this.onSelected});
+class CategoryPicker<T extends EntryCategory> extends StatelessWidget {
+  const CategoryPicker({
+    super.key,
+    required this.categories,
+    required this.selected,
+    required this.onSelected,
+  });
 
-  final ExpenseCategory? selected;
-  final ValueChanged<ExpenseCategory> onSelected;
+  final List<T> categories;
+  final T? selected;
+  final ValueChanged<T> onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +29,7 @@ class CategoryPicker extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       childAspectRatio: 0.95,
       children: [
-        for (final category in ExpenseCategory.values)
+        for (final category in categories)
           Semantics(
             selected: category == selected,
             button: true,

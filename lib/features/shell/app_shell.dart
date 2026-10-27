@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:pocket_budget/features/calendar/calendar_screen.dart';
-import 'package:pocket_budget/features/expense/expense_sheet.dart';
+import 'package:pocket_budget/features/entry/entry_sheet.dart';
 import 'package:pocket_budget/features/home/home_screen.dart';
 import 'package:pocket_budget/features/settings/settings_screen.dart';
 import 'package:pocket_budget/l10n/l10n.dart';
@@ -22,8 +22,8 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   int _tab = _summaryTab;
 
-  /// New expenses go to the day the user is looking at.
-  DateTime _defaultExpenseDate() {
+  /// New entries go to the day the user is looking at.
+  DateTime _defaultEntryDate() {
     final today = ref.read(todayProvider);
     if (_tab == _calendarTab) {
       final day = ref.read(selectedDayProvider);
@@ -44,9 +44,9 @@ class _AppShellState extends ConsumerState<AppShell> {
       ),
       floatingActionButton: _tab == _summaryTab || _tab == _calendarTab
           ? FloatingActionButton.extended(
-              onPressed: () => showExpenseSheet(context, defaultDate: _defaultExpenseDate()),
+              onPressed: () => showEntrySheet(context, defaultDate: _defaultEntryDate()),
               icon: const Icon(Icons.add_rounded),
-              label: Text(l10n.addExpense),
+              label: Text(l10n.addEntry),
             )
           : null,
       bottomNavigationBar: NavigationBar(

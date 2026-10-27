@@ -172,6 +172,12 @@ abstract class AppLocalizations {
   /// **'Maaş'**
   String get statSalary;
 
+  /// No description provided for @statExtraIncome.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ek gelir'**
+  String get statExtraIncome;
+
   /// No description provided for @previousPeriod.
   ///
   /// In tr, this message translates to:
@@ -208,10 +214,16 @@ abstract class AppLocalizations {
   /// **'Harcamalar'**
   String get expensesTitle;
 
+  /// No description provided for @incomesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ek gelirler'**
+  String get incomesTitle;
+
   /// No description provided for @recentTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Son harcamalar'**
+  /// **'Son işlemler'**
   String get recentTitle;
 
   /// No description provided for @seeAll.
@@ -220,23 +232,23 @@ abstract class AppLocalizations {
   /// **'Tümünü gör'**
   String get seeAll;
 
-  /// No description provided for @emptyExpensesTitle.
+  /// No description provided for @emptyEntriesTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Bu dönem henüz harcama yok'**
-  String get emptyExpensesTitle;
+  /// **'Bu dönem henüz kayıt yok'**
+  String get emptyEntriesTitle;
 
-  /// No description provided for @emptyExpensesBody.
+  /// No description provided for @emptyEntriesBody.
   ///
   /// In tr, this message translates to:
-  /// **'İlk harcamanı eklemek için Harcama ekle düğmesine dokun.'**
-  String get emptyExpensesBody;
+  /// **'Harcama ya da ek gelir eklemek için Ekle düğmesine dokun.'**
+  String get emptyEntriesBody;
 
-  /// No description provided for @noExpensesOnDay.
+  /// No description provided for @noEntriesOnDay.
   ///
   /// In tr, this message translates to:
-  /// **'Bu gün için harcama yok.'**
-  String get noExpensesOnDay;
+  /// **'Bu gün için kayıt yok.'**
+  String get noEntriesOnDay;
 
   /// No description provided for @today.
   ///
@@ -250,11 +262,11 @@ abstract class AppLocalizations {
   /// **'Dün'**
   String get yesterday;
 
-  /// No description provided for @addExpense.
+  /// No description provided for @addEntry.
   ///
   /// In tr, this message translates to:
-  /// **'Harcama ekle'**
-  String get addExpense;
+  /// **'Ekle'**
+  String get addEntry;
 
   /// No description provided for @expenseDeleted.
   ///
@@ -262,23 +274,47 @@ abstract class AppLocalizations {
   /// **'Harcama silindi'**
   String get expenseDeleted;
 
+  /// No description provided for @incomeDeleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gelir silindi'**
+  String get incomeDeleted;
+
   /// No description provided for @undo.
   ///
   /// In tr, this message translates to:
   /// **'Geri al'**
   String get undo;
 
-  /// No description provided for @newExpense.
+  /// No description provided for @entryKindExpense.
   ///
   /// In tr, this message translates to:
-  /// **'Yeni harcama'**
-  String get newExpense;
+  /// **'Harcama'**
+  String get entryKindExpense;
+
+  /// No description provided for @entryKindIncome.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gelir'**
+  String get entryKindIncome;
 
   /// No description provided for @editExpense.
   ///
   /// In tr, this message translates to:
   /// **'Harcamayı düzenle'**
   String get editExpense;
+
+  /// No description provided for @editIncome.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geliri düzenle'**
+  String get editIncome;
+
+  /// No description provided for @incomeHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Maaşın dışında gelen para. Bu dönemin kalanına eklenir.'**
+  String get incomeHint;
 
   /// No description provided for @amountRequired.
   ///
@@ -411,6 +447,48 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Diğer'**
   String get categoryOther;
+
+  /// No description provided for @incomeCategorySideJob.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ek iş'**
+  String get incomeCategorySideJob;
+
+  /// No description provided for @incomeCategoryBonus.
+  ///
+  /// In tr, this message translates to:
+  /// **'Prim'**
+  String get incomeCategoryBonus;
+
+  /// No description provided for @incomeCategoryGift.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hediye'**
+  String get incomeCategoryGift;
+
+  /// No description provided for @incomeCategoryRefund.
+  ///
+  /// In tr, this message translates to:
+  /// **'İade'**
+  String get incomeCategoryRefund;
+
+  /// No description provided for @incomeCategorySale.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satış'**
+  String get incomeCategorySale;
+
+  /// No description provided for @incomeCategoryInvestment.
+  ///
+  /// In tr, this message translates to:
+  /// **'Getiri'**
+  String get incomeCategoryInvestment;
+
+  /// No description provided for @incomeCategoryOther.
+  ///
+  /// In tr, this message translates to:
+  /// **'Diğer'**
+  String get incomeCategoryOther;
 
   /// No description provided for @welcomeTitle.
   ///

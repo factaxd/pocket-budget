@@ -2,7 +2,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 const _fileName = 'cuzdan.db';
-const _schemaVersion = 2;
+const _schemaVersion = 3;
 
 Future<Database> openAppDatabase() async {
   final directory = await getDatabasesPath();
@@ -12,9 +12,11 @@ Future<Database> openAppDatabase() async {
     onCreate: (db, version) async {
       await _createV1(db);
       await _upgradeToV2(db);
+      await _upgradeToV3(db);
     },
     onUpgrade: (db, oldVersion, newVersion) async {
       if (oldVersion < 2) await _upgradeToV2(db);
+      if (oldVersion < 3) await _upgradeToV3(db);
     },
   );
 }
@@ -61,5 +63,22 @@ Future<void> _upgradeToV2(Database db) async {
       )
     ''')
     ..execute('ALTER TABLE expenses ADD COLUMN recurring_id INTEGER');
+  await batch.commit(noResult: true);
+}
+
+/// Adds extra income on top of the salary.
+Future<void> _upgradeToV3(Database db) async {
+  final batch = db.batch()
+    ..execute('''
+      CREATE TABLE incomes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        amount INTEGER NOT NULL,
+        category TEXT NOT NULL,
+        note TEXT,
+        received_on TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      )
+    ''')
+    ..execute('CREATE INDEX idx_incomes_received_on ON incomes (received_on)');
   await batch.commit(noResult: true);
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:pocket_budget/core/theme/category_style.dart';
-import 'package:pocket_budget/domain/expense_category.dart';
+import 'package:pocket_budget/domain/entry_category.dart';
 
 /// The category icon in a tinted circle, or a solid one when [filled].
 class CategoryAvatar extends StatelessWidget {
@@ -12,7 +12,7 @@ class CategoryAvatar extends StatelessWidget {
     this.filled = false,
   });
 
-  final ExpenseCategory category;
+  final EntryCategory category;
   final double size;
   final bool filled;
 

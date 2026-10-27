@@ -4,11 +4,14 @@ import 'package:sqflite/sqflite.dart';
 
 import 'package:pocket_budget/core/dates.dart';
 import 'package:pocket_budget/data/expense_repository.dart';
+import 'package:pocket_budget/data/income_repository.dart';
 import 'package:pocket_budget/data/recurring_repository.dart';
 import 'package:pocket_budget/data/salary_repository.dart';
 import 'package:pocket_budget/data/settings_repository.dart';
 import 'package:pocket_budget/domain/app_settings.dart';
 import 'package:pocket_budget/domain/expense.dart';
+import 'package:pocket_budget/domain/income.dart';
+import 'package:pocket_budget/domain/ledger_entry.dart';
 import 'package:pocket_budget/domain/pay_period.dart';
 import 'package:pocket_budget/domain/period_summary.dart';
 import 'package:pocket_budget/domain/recurring_expense.dart';
@@ -26,6 +29,8 @@ final settingsRepositoryProvider =
     Provider((ref) => SettingsRepository(ref.watch(databaseProvider)));
 final expenseRepositoryProvider =
     Provider((ref) => ExpenseRepository(ref.watch(databaseProvider)));
+final incomeRepositoryProvider =
+    Provider((ref) => IncomeRepository(ref.watch(databaseProvider)));
 final salaryRepositoryProvider =
     Provider((ref) => SalaryRepository(ref.watch(databaseProvider)));
 final recurringRepositoryProvider =
@@ -144,9 +149,12 @@ final earliestPeriodProvider = FutureProvider<PayPeriod>((ref) async {
   final settings = ref.watch(settingsProvider);
   final today = ref.watch(todayProvider);
   final firstExpense = await ref.watch(expenseRepositoryProvider).earliestDate();
+  final firstIncome = await ref.watch(incomeRepositoryProvider).earliestDate();
 
   var earliest = settings.startedOn ?? today;
-  if (firstExpense != null && firstExpense.isBefore(earliest)) earliest = firstExpense;
+  for (final date in [firstExpense, firstIncome]) {
+    if (date != null && date.isBefore(earliest)) earliest = date;
+  }
   return PayPeriod.containing(earliest, settings.payday);
 });
 
@@ -171,7 +179,14 @@ class PeriodSummaryNotifier extends AsyncNotifier<PeriodSummary> {
     }
 
     final expenses = await ref.watch(expenseRepositoryProvider).inRange(period.start, period.end);
-    return PeriodSummary(period: period, salary: salary, expenses: expenses, today: today);
+    final incomes = await ref.watch(incomeRepositoryProvider).inRange(period.start, period.end);
+    return PeriodSummary(
+      period: period,
+      salary: salary,
+      expenses: expenses,
+      incomes: incomes,
+      today: today,
+    );
   }
 }
 
@@ -183,6 +198,13 @@ final monthExpensesProvider =
       .watch(expenseRepositoryProvider)
       .inRange(month, DateTime(month.year, month.month + 1));
 });
+
+/// Extra incomes of a calendar month, keyed by the first day of that month.
+final monthIncomesProvider = FutureProvider.family<List<Income>, DateTime>(
+  (ref, month) => ref
+      .watch(incomeRepositoryProvider)
+      .inRange(month, DateTime(month.year, month.month + 1)),
+);
 
 /// The day picked on the calendar tab; its month is the month on screen.
 final selectedDayProvider =
@@ -202,14 +224,16 @@ class SelectedDayNotifier extends Notifier<DateTime> {
   }
 }
 
-final expenseActionsProvider = Provider(ExpenseActions.new);
+final entryActionsProvider = Provider(EntryActions.new);
 
-class ExpenseActions {
-  ExpenseActions(this._ref);
+/// Saves and removes expenses and incomes, and refreshes everything that shows them.
+class EntryActions {
+  EntryActions(this._ref);
 
   final Ref _ref;
 
   ExpenseRepository get _repository => _ref.read(expenseRepositoryProvider);
+  IncomeRepository get _incomes => _ref.read(incomeRepositoryProvider);
 
   /// Saves [expense] and starts, updates or stops its monthly repetition.
   Future<void> save(Expense expense, {required bool repeatMonthly}) async {
@@ -237,14 +261,33 @@ class ExpenseActions {
     _refresh();
   }
 
-  Future<void> delete(Expense expense) async {
-    await _repository.delete(expense.id!);
+  Future<void> saveIncome(Income income) async {
+    if (income.id == null) {
+      await _incomes.insert(income);
+    } else {
+      await _incomes.update(income);
+    }
     _refresh();
   }
 
-  /// Puts back an expense removed by [delete], with its original id.
-  Future<void> restore(Expense expense) async {
-    await _repository.insert(expense);
+  Future<void> delete(LedgerEntry entry) async {
+    switch (entry) {
+      case Expense():
+        await _repository.delete(entry.id!);
+      case Income():
+        await _incomes.delete(entry.id!);
+    }
+    _refresh();
+  }
+
+  /// Puts back an entry removed by [delete], with its original id.
+  Future<void> restore(LedgerEntry entry) async {
+    switch (entry) {
+      case final Expense expense:
+        await _repository.insert(expense);
+      case final Income income:
+        await _incomes.insert(income);
+    }
     _refresh();
   }
 
@@ -291,6 +334,7 @@ class ExpenseActions {
     _ref.invalidate(recurringExpensesProvider);
     _ref.invalidate(periodSummaryProvider);
     _ref.invalidate(monthExpensesProvider);
+    _ref.invalidate(monthIncomesProvider);
     _ref.invalidate(earliestPeriodProvider);
   }
 }

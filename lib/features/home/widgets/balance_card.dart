@@ -62,6 +62,7 @@ class BalanceCard extends StatelessWidget {
           _RemainingBar(ratio: summary.remainingRatio, duration: duration, colors: colors),
           const SizedBox(height: 18),
           Row(
+            spacing: 12,
             children: [
               Expanded(
                 child: _Stat(
@@ -77,6 +78,16 @@ class BalanceCard extends StatelessWidget {
                   colors: colors,
                 ),
               ),
+              // Only shown when there is some, so the card stays simple otherwise.
+              if (summary.extraIncome > 0)
+                Expanded(
+                  child: _Stat(
+                    label: l10n.statExtraIncome,
+                    value: '+${Money.format(summary.extraIncome)}',
+                    valueColor: colors.heroPositive,
+                    colors: colors,
+                  ),
+                ),
             ],
           ),
         ],
@@ -87,10 +98,16 @@ class BalanceCard extends StatelessWidget {
 }
 
 class _Stat extends StatelessWidget {
-  const _Stat({required this.label, required this.value, required this.colors});
+  const _Stat({
+    required this.label,
+    required this.value,
+    this.valueColor,
+    required this.colors,
+  });
 
   final String label;
   final String value;
+  final Color? valueColor;
   final CuzdanColors colors;
 
   @override
@@ -101,12 +118,18 @@ class _Stat extends StatelessWidget {
       children: [
         Text(label, style: textTheme.bodyMedium?.copyWith(color: colors.heroMuted)),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: colors.heroForeground,
-            fontFeatures: const [FontFeature.tabularFigures()],
+        // Three stats share the row when there is extra income, so large amounts shrink to fit.
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            value,
+            maxLines: 1,
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: valueColor ?? colors.heroForeground,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
           ),
         ),
       ],

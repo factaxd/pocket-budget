@@ -7,13 +7,13 @@ import 'package:pocket_budget/domain/period_summary.dart';
 import 'package:pocket_budget/features/home/all_expenses_screen.dart';
 import 'package:pocket_budget/features/home/widgets/balance_card.dart';
 import 'package:pocket_budget/features/home/widgets/period_switcher.dart';
-import 'package:pocket_budget/features/shared/expense_list.dart';
+import 'package:pocket_budget/features/shared/entry_list.dart';
 import 'package:pocket_budget/features/shared/section_header.dart';
 import 'package:pocket_budget/l10n/l10n.dart';
 import 'package:pocket_budget/providers.dart';
 
 /// Fits on one screen without scrolling: balance first, then as many of the
-/// latest expenses as the remaining space allows.
+/// latest entries as the remaining space allows.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -71,7 +71,7 @@ class _HomeContent extends ConsumerWidget {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _RecentExpenses(summary: summary),
+            child: _RecentEntries(summary: summary),
           ),
         ),
       ],
@@ -79,8 +79,8 @@ class _HomeContent extends ConsumerWidget {
   }
 }
 
-class _RecentExpenses extends StatelessWidget {
-  const _RecentExpenses({required this.summary});
+class _RecentEntries extends StatelessWidget {
+  const _RecentEntries({required this.summary});
 
   final PeriodSummary summary;
 
@@ -92,18 +92,18 @@ class _RecentExpenses extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final expenses = summary.expenses;
+    final entries = summary.entries;
 
-    if (expenses.isEmpty) {
+    if (entries.isEmpty) {
       return Padding(
         padding: const EdgeInsets.only(bottom: _fabClearance),
-        child: Center(child: _EmptyExpenses()),
+        child: Center(child: _EmptyEntries()),
       );
     }
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final rowHeight = MediaQuery.textScalerOf(context).scale(ExpenseTile.height);
+        final rowHeight = MediaQuery.textScalerOf(context).scale(EntryTile.height);
         final available = constraints.maxHeight - _headerHeight - _fabClearance;
         final count = max(1, available ~/ rowHeight);
 
@@ -122,7 +122,7 @@ class _RecentExpenses extends StatelessWidget {
             // Scrolls only as a fallback, e.g. with very large system font sizes.
             Flexible(
               child: SingleChildScrollView(
-                child: ExpenseList(expenses: expenses.take(count).toList(), showDate: true),
+                child: EntryList(entries: entries.take(count).toList(), showDate: true),
               ),
             ),
             const SizedBox(height: _fabClearance),
@@ -133,7 +133,7 @@ class _RecentExpenses extends StatelessWidget {
   }
 }
 
-class _EmptyExpenses extends StatelessWidget {
+class _EmptyEntries extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -144,10 +144,10 @@ class _EmptyExpenses extends StatelessWidget {
       children: [
         Icon(Icons.receipt_long_outlined, size: 40, color: theme.colorScheme.primary),
         const SizedBox(height: 12),
-        Text(l10n.emptyExpensesTitle, style: theme.textTheme.titleMedium),
+        Text(l10n.emptyEntriesTitle, style: theme.textTheme.titleMedium),
         const SizedBox(height: 4),
         Text(
-          l10n.emptyExpensesBody,
+          l10n.emptyEntriesBody,
           textAlign: TextAlign.center,
           style: theme.textTheme.bodyLarge?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,

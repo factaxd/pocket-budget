@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import 'package:pocket_budget/core/money.dart';
+import 'package:pocket_budget/core/theme/cuzdan_colors.dart';
 import 'package:pocket_budget/domain/expense.dart';
+import 'package:pocket_budget/domain/income.dart';
+import 'package:pocket_budget/domain/ledger_entry.dart';
 import 'package:pocket_budget/features/calendar/month_grid.dart';
 import 'package:pocket_budget/features/shared/date_labels.dart';
-import 'package:pocket_budget/features/shared/expense_list.dart';
+import 'package:pocket_budget/features/shared/entry_list.dart';
 import 'package:pocket_budget/features/shared/section_header.dart';
 import 'package:pocket_budget/l10n/l10n.dart';
 import 'package:pocket_budget/providers.dart';
@@ -29,6 +32,10 @@ class CalendarScreen extends ConsumerWidget {
       AsyncValue(:final value?) => value,
       _ => const <Expense>[],
     };
+    final incomes = switch (ref.watch(monthIncomesProvider(month))) {
+      AsyncValue(:final value?) => value,
+      _ => const <Income>[],
+    };
     final earliest = switch (ref.watch(earliestPeriodProvider)) {
       AsyncValue(:final value?) => value.start,
       _ => today,
@@ -36,11 +43,19 @@ class CalendarScreen extends ConsumerWidget {
     final canGoBack = month.isAfter(DateTime(earliest.year, earliest.month));
     final canGoForward = month.isBefore(DateTime(today.year, today.month));
 
-    final dayExpenses = [
+    final dayEntries = <LedgerEntry>[
       for (final expense in expenses)
         if (expense.spentOn == selectedDay) expense,
-    ];
-    final dayTotal = dayExpenses.fold(0, (sum, expense) => sum + expense.amount);
+      for (final income in incomes)
+        if (income.receivedOn == selectedDay) income,
+    ]..sort(compareNewestFirst);
+    final daySpent = dayEntries
+        .whereType<Expense>()
+        .fold(0, (sum, expense) => sum + expense.amount);
+    final dayIncome = dayEntries
+        .whereType<Income>()
+        .fold(0, (sum, income) => sum + income.amount);
+    final totalStyle = theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700);
 
     return SafeArea(
       bottom: false,
@@ -86,6 +101,7 @@ class CalendarScreen extends ConsumerWidget {
               child: MonthGrid(
                 month: month,
                 expenses: expenses,
+                incomes: incomes,
                 selectedDay: selectedDay,
                 today: today,
                 onDaySelected: selection.select,
@@ -95,28 +111,36 @@ class CalendarScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           SectionHeader(
             title: formatDayLabel(selectedDay, l10n, today: today),
-            action: dayTotal > 0
+            action: dayEntries.isNotEmpty
                 ? Padding(
                     padding: const EdgeInsets.only(right: 4),
-                    child: Text(
-                      Money.format(dayTotal),
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 12,
+                      children: [
+                        if (dayIncome > 0)
+                          Text(
+                            '+${Money.format(dayIncome)}',
+                            style: totalStyle?.copyWith(color: context.cuzdanColors.positive),
+                          ),
+                        if (daySpent > 0) Text(Money.format(daySpent), style: totalStyle),
+                      ],
                     ),
                   )
                 : null,
           ),
-          if (dayExpenses.isEmpty)
+          if (dayEntries.isEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
               child: Text(
-                l10n.noExpensesOnDay,
+                l10n.noEntriesOnDay,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             )
           else
-            ExpenseList(expenses: dayExpenses),
+            EntryList(entries: dayEntries),
         ],
       ),
     );

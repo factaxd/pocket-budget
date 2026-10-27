@@ -54,6 +54,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get statSalary => 'Maaş';
 
   @override
+  String get statExtraIncome => 'Ek gelir';
+
+  @override
   String get previousPeriod => 'Önceki dönem';
 
   @override
@@ -72,20 +75,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String get expensesTitle => 'Harcamalar';
 
   @override
-  String get recentTitle => 'Son harcamalar';
+  String get incomesTitle => 'Ek gelirler';
+
+  @override
+  String get recentTitle => 'Son işlemler';
 
   @override
   String get seeAll => 'Tümünü gör';
 
   @override
-  String get emptyExpensesTitle => 'Bu dönem henüz harcama yok';
+  String get emptyEntriesTitle => 'Bu dönem henüz kayıt yok';
 
   @override
-  String get emptyExpensesBody =>
-      'İlk harcamanı eklemek için Harcama ekle düğmesine dokun.';
+  String get emptyEntriesBody =>
+      'Harcama ya da ek gelir eklemek için Ekle düğmesine dokun.';
 
   @override
-  String get noExpensesOnDay => 'Bu gün için harcama yok.';
+  String get noEntriesOnDay => 'Bu gün için kayıt yok.';
 
   @override
   String get today => 'Bugün';
@@ -94,19 +100,32 @@ class AppLocalizationsTr extends AppLocalizations {
   String get yesterday => 'Dün';
 
   @override
-  String get addExpense => 'Harcama ekle';
+  String get addEntry => 'Ekle';
 
   @override
   String get expenseDeleted => 'Harcama silindi';
 
   @override
+  String get incomeDeleted => 'Gelir silindi';
+
+  @override
   String get undo => 'Geri al';
 
   @override
-  String get newExpense => 'Yeni harcama';
+  String get entryKindExpense => 'Harcama';
+
+  @override
+  String get entryKindIncome => 'Gelir';
 
   @override
   String get editExpense => 'Harcamayı düzenle';
+
+  @override
+  String get editIncome => 'Geliri düzenle';
+
+  @override
+  String get incomeHint =>
+      'Maaşın dışında gelen para. Bu dönemin kalanına eklenir.';
 
   @override
   String get amountRequired => 'Bir tutar gir';
@@ -173,6 +192,27 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get categoryOther => 'Diğer';
+
+  @override
+  String get incomeCategorySideJob => 'Ek iş';
+
+  @override
+  String get incomeCategoryBonus => 'Prim';
+
+  @override
+  String get incomeCategoryGift => 'Hediye';
+
+  @override
+  String get incomeCategoryRefund => 'İade';
+
+  @override
+  String get incomeCategorySale => 'Satış';
+
+  @override
+  String get incomeCategoryInvestment => 'Getiri';
+
+  @override
+  String get incomeCategoryOther => 'Diğer';
 
   @override
   String get welcomeTitle => 'Cüzdan\'a hoş geldin';
