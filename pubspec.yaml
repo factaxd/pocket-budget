@@ -47,6 +47,8 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: assets/icon/icon.png
-  adaptive_icon_background: "#3B1F3D"
+  adaptive_icon_background: assets/icon/icon_background.png
   adaptive_icon_foreground: assets/icon/icon_foreground.png
+  # The foreground image already leaves room for the launcher mask.
+  adaptive_icon_foreground_inset: 0
   remove_alpha_ios: true
