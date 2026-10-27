@@ -211,11 +211,28 @@ class ExpenseActions {
 
   ExpenseRepository get _repository => _ref.read(expenseRepositoryProvider);
 
-  Future<void> save(Expense expense) async {
-    if (expense.id == null) {
-      await _repository.insert(expense);
+  /// Saves [expense] and starts, updates or stops its monthly repetition.
+  Future<void> save(Expense expense, {required bool repeatMonthly}) async {
+    int? recurringId;
+    if (repeatMonthly) {
+      recurringId = await _saveRecurringFor(expense);
+    } else if (expense.recurringId != null) {
+      await _recurring.delete(expense.recurringId!);
+    }
+
+    final saved = Expense(
+      id: expense.id,
+      amount: expense.amount,
+      category: expense.category,
+      note: expense.note,
+      spentOn: expense.spentOn,
+      createdAt: expense.createdAt,
+      recurringId: recurringId,
+    );
+    if (saved.id == null) {
+      await _repository.insert(saved);
     } else {
-      await _repository.update(expense);
+      await _repository.update(saved);
     }
     _refresh();
   }
@@ -231,39 +248,37 @@ class ExpenseActions {
     _refresh();
   }
 
-  /// Saves a new [expense] and repeats it on the same day every month.
-  Future<void> saveRepeating(Expense expense) async {
+  /// Creates or updates the recurring expense that repeats [expense] on its
+  /// day every month, and returns its id.
+  Future<int> _saveRecurringFor(Expense expense) async {
     final today = _ref.read(todayProvider);
-    final recurringId = await _recurring.insert(RecurringExpense(
+    final existing =
+        expense.recurringId == null ? null : await _recurring.byId(expense.recurringId!);
+
+    // The expense itself is this month's occurrence, so new ones start after it.
+    var generatedThrough = expense.spentOn.isAfter(today) ? expense.spentOn : today;
+    if (existing != null && existing.generatedThrough.isAfter(generatedThrough)) {
+      generatedThrough = existing.generatedThrough;
+    }
+    final recurring = RecurringExpense(
+      id: existing?.id,
       amount: expense.amount,
       category: expense.category,
       note: expense.note,
       dayOfMonth: expense.spentOn.day,
-      // This month's occurrence is the expense itself.
-      generatedThrough: expense.spentOn.isAfter(today) ? expense.spentOn : today,
-    ));
-    await _repository.insert(Expense(
-      amount: expense.amount,
-      category: expense.category,
-      note: expense.note,
-      spentOn: expense.spentOn,
-      recurringId: recurringId,
-    ));
+      generatedThrough: generatedThrough,
+    );
+    if (existing == null) return _recurring.insert(recurring);
+    await _recurring.update(recurring);
+    return existing.id!;
+  }
+
+  Future<void> updateRecurring(RecurringExpense recurring) async {
+    await _recurring.update(recurring);
     _refresh();
   }
 
-  /// Creates or updates a recurring expense. Occurrences after its
-  /// `generatedThrough` date are added by the sync that the refresh triggers.
-  Future<void> saveRecurring(RecurringExpense recurring) async {
-    if (recurring.id == null) {
-      await _recurring.insert(recurring);
-    } else {
-      await _recurring.update(recurring);
-    }
-    _refresh();
-  }
-
-  /// Stops a recurring expense; the expenses it already added stay.
+  /// Stops a recurring expense; the expenses it already added stay as regular ones.
   Future<void> deleteRecurring(RecurringExpense recurring) async {
     await _recurring.delete(recurring.id!);
     _refresh();

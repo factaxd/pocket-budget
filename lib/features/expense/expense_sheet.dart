@@ -45,7 +45,7 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
   ExpenseCategory? _category;
   late DateTime _date;
   bool _showCategoryError = false;
-  bool _repeatMonthly = false;
+  late bool _repeatMonthly;
   bool _saving = false;
 
   bool get _isEditing => widget.expense != null;
@@ -60,6 +60,7 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
     _noteController = TextEditingController(text: expense?.note ?? '');
     _category = expense?.category;
     _date = expense?.spentOn ?? widget.defaultDate;
+    _repeatMonthly = expense?.recurringId != null;
   }
 
   @override
@@ -96,8 +97,7 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
       createdAt: widget.expense?.createdAt,
       recurringId: widget.expense?.recurringId,
     );
-    final actions = ref.read(expenseActionsProvider);
-    await (_repeatMonthly ? actions.saveRepeating(expense) : actions.save(expense));
+    await ref.read(expenseActionsProvider).save(expense, repeatMonthly: _repeatMonthly);
     if (mounted) Navigator.of(context).pop();
   }
 
@@ -212,18 +212,41 @@ class _ExpenseSheetState extends ConsumerState<ExpenseSheet> {
                   ),
                 ],
               ),
-              if (!_isEditing) ...[
-                const SizedBox(height: 8),
-                SwitchListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                  secondary: Icon(Icons.repeat_rounded, color: theme.colorScheme.primary),
-                  title: Text(l10n.repeatMonthly),
-                  subtitle: Text(l10n.repeatMonthlySubtitle(_date.day)),
-                  value: _repeatMonthly,
-                  onChanged: (value) => setState(() => _repeatMonthly = value),
-                ),
-              ],
               const SizedBox(height: 16),
+              Text(l10n.repeatLabel, style: theme.textTheme.titleSmall),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ChoiceChip(
+                    label: Text(l10n.repeatOnce),
+                    selected: !_repeatMonthly,
+                    onSelected: (_) => setState(() => _repeatMonthly = false),
+                  ),
+                  ChoiceChip(
+                    avatar: Icon(
+                      Icons.repeat_rounded,
+                      size: 18,
+                      color: _repeatMonthly ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
+                    ),
+                    label: Text(l10n.repeatMonthly),
+                    selected: _repeatMonthly,
+                    onSelected: (_) => setState(() => _repeatMonthly = true),
+                  ),
+                ],
+              ),
+              if (_repeatMonthly)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
+                  child: Text(
+                    l10n.repeatMonthlySubtitle(_date.day),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 24),
               FilledButton(
                 onPressed: _saving ? null : _save,
                 child: Text(l10n.save),

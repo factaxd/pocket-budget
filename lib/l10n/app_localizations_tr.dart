@@ -51,9 +51,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get statSpent => 'Harcanan';
 
   @override
-  String get statDailyLimit => 'Günlük limit';
-
-  @override
   String get statSalary => 'Maaş';
 
   @override
@@ -258,19 +255,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get recurringEmptyBody =>
-      'Kira, fatura ve abonelikleri bir kez ekle, her ay kendiliğinden eklensin.';
+      'Harcama eklerken Tekrar bölümünden Her ay\'ı seç. Kira, fatura ve abonelikler her ay kendiliğinden eklenir.';
 
   @override
   String get recurringMonthlyTotal => 'Aylık toplam';
 
   @override
   String get recurringBadge => 'Tekrarlayan harcama';
-
-  @override
-  String get addRecurring => 'Tekrarlayan ekle';
-
-  @override
-  String get newRecurring => 'Yeni tekrarlayan harcama';
 
   @override
   String get editRecurring => 'Tekrarlayanı düzenle';
@@ -282,7 +273,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get recurringDayPickerTitle => 'Ayın kaçında eklensin?';
 
   @override
-  String get repeatMonthly => 'Her ay tekrarla';
+  String get repeatLabel => 'Tekrar';
+
+  @override
+  String get repeatOnce => 'Tek seferlik';
+
+  @override
+  String get repeatMonthly => 'Her ay';
 
   @override
   String repeatMonthlySubtitle(int day) {

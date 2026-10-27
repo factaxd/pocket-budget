@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:pocket_budget/core/dates.dart';
 import 'package:pocket_budget/core/money.dart';
 import 'package:pocket_budget/domain/expense_category.dart';
 import 'package:pocket_budget/domain/recurring_expense.dart';
@@ -11,8 +10,9 @@ import 'package:pocket_budget/features/shared/payday_picker.dart';
 import 'package:pocket_budget/l10n/l10n.dart';
 import 'package:pocket_budget/providers.dart';
 
-/// Opens the form for a new recurring expense, or for editing [recurring].
-Future<void> showRecurringSheet(BuildContext context, {RecurringExpense? recurring}) {
+/// Opens the form for editing or stopping [recurring]. New recurring
+/// expenses are created from the expense form.
+Future<void> showRecurringSheet(BuildContext context, {required RecurringExpense recurring}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
@@ -22,9 +22,9 @@ Future<void> showRecurringSheet(BuildContext context, {RecurringExpense? recurri
 }
 
 class _RecurringSheet extends ConsumerStatefulWidget {
-  const _RecurringSheet({this.recurring});
+  const _RecurringSheet({required this.recurring});
 
-  final RecurringExpense? recurring;
+  final RecurringExpense recurring;
 
   @override
   ConsumerState<_RecurringSheet> createState() => _RecurringSheetState();
@@ -32,26 +32,12 @@ class _RecurringSheet extends ConsumerStatefulWidget {
 
 class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _amountController;
-  late final TextEditingController _noteController;
-  ExpenseCategory? _category;
-  late int _dayOfMonth;
-  bool _showCategoryError = false;
+  late final _amountController =
+      TextEditingController(text: Money.toInput(widget.recurring.amount));
+  late final _noteController = TextEditingController(text: widget.recurring.note ?? '');
+  late ExpenseCategory _category = widget.recurring.category;
+  late int _dayOfMonth = widget.recurring.dayOfMonth;
   bool _saving = false;
-
-  bool get _isEditing => widget.recurring != null;
-
-  @override
-  void initState() {
-    super.initState();
-    final recurring = widget.recurring;
-    _amountController = TextEditingController(
-      text: recurring == null ? '' : Money.toInput(recurring.amount),
-    );
-    _noteController = TextEditingController(text: recurring?.note ?? '');
-    _category = recurring?.category;
-    _dayOfMonth = recurring?.dayOfMonth ?? ref.read(todayProvider).day;
-  }
 
   @override
   void dispose() {
@@ -70,22 +56,17 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
   }
 
   Future<void> _save() async {
-    final amountIsValid = _formKey.currentState!.validate();
-    setState(() => _showCategoryError = _category == null);
-    if (!amountIsValid || _category == null) return;
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() => _saving = true);
     final note = _noteController.text.trim();
-    // A new one also covers its day in the current period if that day has passed.
-    final generatedThrough = widget.recurring?.generatedThrough ??
-        addDays(ref.read(currentPeriodProvider).start, -1);
-    await ref.read(expenseActionsProvider).saveRecurring(RecurringExpense(
-          id: widget.recurring?.id,
+    await ref.read(expenseActionsProvider).updateRecurring(RecurringExpense(
+          id: widget.recurring.id,
           amount: Money.parse(_amountController.text)!,
-          category: _category!,
+          category: _category,
           note: note.isEmpty ? null : note,
           dayOfMonth: _dayOfMonth,
-          generatedThrough: generatedThrough,
+          generatedThrough: widget.recurring.generatedThrough,
         ));
     if (mounted) Navigator.of(context).pop();
   }
@@ -112,7 +93,7 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
       ),
     );
     if (confirmed != true) return;
-    await ref.read(expenseActionsProvider).deleteRecurring(widget.recurring!);
+    await ref.read(expenseActionsProvider).deleteRecurring(widget.recurring);
     navigator.pop();
   }
 
@@ -134,43 +115,24 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      _isEditing ? l10n.editRecurring : l10n.newRecurring,
-                      style: theme.textTheme.headlineSmall,
-                    ),
+                    child: Text(l10n.editRecurring, style: theme.textTheme.headlineSmall),
                   ),
-                  if (_isEditing)
-                    IconButton(
-                      tooltip: l10n.delete,
-                      icon: Icon(Icons.delete_outline_rounded, color: theme.colorScheme.error),
-                      onPressed: _saving ? null : _delete,
-                    ),
+                  IconButton(
+                    tooltip: l10n.delete,
+                    icon: Icon(Icons.delete_outline_rounded, color: theme.colorScheme.error),
+                    onPressed: _saving ? null : _delete,
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
-              AmountField(
-                controller: _amountController,
-                autofocus: !_isEditing,
-                large: true,
-              ),
+              AmountField(controller: _amountController, large: true),
               const SizedBox(height: 20),
               Text(l10n.categoryLabel, style: theme.textTheme.titleSmall),
               const SizedBox(height: 8),
               CategoryPicker(
                 selected: _category,
-                onSelected: (category) => setState(() {
-                  _category = category;
-                  _showCategoryError = false;
-                }),
+                onSelected: (category) => setState(() => _category = category),
               ),
-              if (_showCategoryError)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4, left: 4),
-                  child: Text(
-                    l10n.categoryRequired,
-                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.error),
-                  ),
-                ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _noteController,

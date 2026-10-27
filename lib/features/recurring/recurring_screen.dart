@@ -22,11 +22,6 @@ class RecurringScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.recurringTitle)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => showRecurringSheet(context),
-        icon: const Icon(Icons.add_rounded),
-        label: Text(l10n.addRecurring),
-      ),
       body: switch (recurring) {
         null => const Center(child: CircularProgressIndicator()),
         [] => Center(
@@ -51,7 +46,7 @@ class RecurringScreen extends ConsumerWidget {
             ),
           ),
         final items => ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 112),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: [
               Material(
                 color: theme.colorScheme.surfaceContainerLowest,

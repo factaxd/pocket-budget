@@ -17,6 +17,11 @@ class RecurringRepository {
     return rows.map(_fromRow).toList();
   }
 
+  Future<RecurringExpense?> byId(int id) async {
+    final rows = await _db.query(_table, where: 'id = ?', whereArgs: [id]);
+    return rows.isEmpty ? null : _fromRow(rows.first);
+  }
+
   /// Returns the id of the new row.
   Future<int> insert(RecurringExpense recurring) => _db.insert(_table, _toRow(recurring));
 
@@ -24,9 +29,18 @@ class RecurringRepository {
     await _db.update(_table, _toRow(recurring), where: 'id = ?', whereArgs: [recurring.id]);
   }
 
-  /// Removes the template; expenses it already added stay.
+  /// Removes the recurring expense. The expenses it already added stay,
+  /// unlinked, as regular expenses.
   Future<void> delete(int id) async {
-    await _db.delete(_table, where: 'id = ?', whereArgs: [id]);
+    await _db.transaction((txn) async {
+      await txn.update(
+        'expenses',
+        {'recurring_id': null},
+        where: 'recurring_id = ?',
+        whereArgs: [id],
+      );
+      await txn.delete(_table, where: 'id = ?', whereArgs: [id]);
+    });
   }
 
   Map<String, Object?> _toRow(RecurringExpense recurring) => {

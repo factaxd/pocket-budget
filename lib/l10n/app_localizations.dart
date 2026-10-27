@@ -166,12 +166,6 @@ abstract class AppLocalizations {
   /// **'Harcanan'**
   String get statSpent;
 
-  /// No description provided for @statDailyLimit.
-  ///
-  /// In tr, this message translates to:
-  /// **'Günlük limit'**
-  String get statDailyLimit;
-
   /// No description provided for @statSalary.
   ///
   /// In tr, this message translates to:
@@ -565,7 +559,7 @@ abstract class AppLocalizations {
   /// No description provided for @recurringEmptyBody.
   ///
   /// In tr, this message translates to:
-  /// **'Kira, fatura ve abonelikleri bir kez ekle, her ay kendiliğinden eklensin.'**
+  /// **'Harcama eklerken Tekrar bölümünden Her ay\'ı seç. Kira, fatura ve abonelikler her ay kendiliğinden eklenir.'**
   String get recurringEmptyBody;
 
   /// No description provided for @recurringMonthlyTotal.
@@ -579,18 +573,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Tekrarlayan harcama'**
   String get recurringBadge;
-
-  /// No description provided for @addRecurring.
-  ///
-  /// In tr, this message translates to:
-  /// **'Tekrarlayan ekle'**
-  String get addRecurring;
-
-  /// No description provided for @newRecurring.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yeni tekrarlayan harcama'**
-  String get newRecurring;
 
   /// No description provided for @editRecurring.
   ///
@@ -610,10 +592,22 @@ abstract class AppLocalizations {
   /// **'Ayın kaçında eklensin?'**
   String get recurringDayPickerTitle;
 
+  /// No description provided for @repeatLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar'**
+  String get repeatLabel;
+
+  /// No description provided for @repeatOnce.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tek seferlik'**
+  String get repeatOnce;
+
   /// No description provided for @repeatMonthly.
   ///
   /// In tr, this message translates to:
-  /// **'Her ay tekrarla'**
+  /// **'Her ay'**
   String get repeatMonthly;
 
   /// No description provided for @repeatMonthlySubtitle.
