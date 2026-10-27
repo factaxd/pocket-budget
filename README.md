@@ -22,6 +22,7 @@
 - **Fast expense entry.** Type the amount, tap a category, done. Shortcuts for today and yesterday, and an optional note.
 - **Colored categories.** Twelve categories, each with its own color and icon, plus a breakdown of where the money went.
 - **Calendar view.** See daily totals and category dots for every day of the month, and tap a day to see its expenses.
+- **Extra income.** Switch the add form to "Gelir" to log a bonus, side job, refund or sale. It is added to what is left for that period and shows in green with a plus sign, so it never looks like spending.
 - **Recurring expenses.** Choose "every month" while adding an expense, and rent, bills or subscriptions are added automatically on the same day each month, including months the app was not opened.
 - **Undo.** Swipe an expense away to delete it, and undo if it was a mistake.
 - **Excel export.** Save every expense and a per-period summary as an `.xlsx` file.
