@@ -52,7 +52,7 @@ void main() {
   group('PeriodSummary', () {
     final period = PayPeriod.containing(DateTime(2026, 10, 27), 15);
 
-    test('splits the remaining money over the days left', () {
+    test('counts the days left until payday, including today', () {
       final summary = PeriodSummary(
         period: period,
         salary: 2000000,
@@ -60,10 +60,9 @@ void main() {
         today: DateTime(2026, 11, 5),
       );
       expect(summary.daysLeft, 10);
-      expect(summary.dailyAllowance, 200000);
     });
 
-    test('has no allowance for past periods', () {
+    test('has no days left once the period is over', () {
       final summary = PeriodSummary(
         period: period,
         salary: 2000000,
@@ -71,7 +70,7 @@ void main() {
         today: DateTime(2026, 12, 1),
       );
       expect(summary.isCurrent, isFalse);
-      expect(summary.dailyAllowance, isNull);
+      expect(summary.daysLeft, 0);
     });
   });
 }

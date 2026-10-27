@@ -71,18 +71,11 @@ class BalanceCard extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: summary.isCurrent
-                    ? _Stat(
-                        label: l10n.statDailyLimit,
-                        // Whole lira reads better for a daily guide than an exact amount.
-                        value: Money.format((summary.dailyAllowance ?? 0) ~/ 100 * 100),
-                        colors: colors,
-                      )
-                    : _Stat(
-                        label: l10n.statSalary,
-                        value: Money.format(summary.salary),
-                        colors: colors,
-                      ),
+                child: _Stat(
+                  label: l10n.statSalary,
+                  value: Money.format(summary.salary),
+                  colors: colors,
+                ),
               ),
             ],
           ),

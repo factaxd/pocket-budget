@@ -28,7 +28,4 @@ class PeriodSummary {
 
   /// Days until the next payday, counting today.
   int get daysLeft => isCurrent ? daysBetween(today, period.end) : 0;
-
-  /// How much can be spent per day to finish the period on budget.
-  int? get dailyAllowance => isCurrent && remaining > 0 ? remaining ~/ daysLeft : null;
 }
