@@ -6,31 +6,32 @@
 
 <p align="center">
   A simple salary and expense tracker for Android.<br>
-  Enter your salary once, log what you spend, and always know what is left until payday.
+  Enter your salary once, log what you spend and any extra you earn, and always know what is left until payday.
 </p>
 
 <p align="center">
   <img src="docs/screenshots/summary.png" width="200" alt="Summary screen">
   <img src="docs/screenshots/calendar.png" width="200" alt="Calendar screen">
-  <img src="docs/screenshots/add-expense.png" width="200" alt="Adding an expense">
+  <img src="docs/screenshots/add-income.png" width="200" alt="Adding extra income">
 </p>
 
 ## Features
 
-- **Remaining balance at a glance.** The summary shows what is left of this period's salary, how much has been spent, and how many days are left until payday.
+- **Remaining balance at a glance.** The summary shows what is left of this period's salary and extra income, how much has been spent, and how many days are left until payday.
 - **Custom payday.** Periods run from payday to payday (for example the 15th to the 14th), not just calendar months. Short months are handled automatically.
 - **Fast expense entry.** Type the amount, tap a category, done. Shortcuts for today and yesterday, and an optional note.
 - **Colored categories.** Twelve categories, each with its own color and icon, plus a breakdown of where the money went.
-- **Calendar view.** See daily totals and category dots for every day of the month, and tap a day to see its expenses.
-- **Extra income.** Switch the add form to "Gelir" to log a bonus, side job, refund or sale. It is added to what is left for that period and shows in green with a plus sign, so it never looks like spending.
+- **Calendar view.** See daily totals and category dots for every day of the month, and tap a day to see its expenses and income. Days with extra income are tinted green.
+- **Extra income.** Switch the add form from "Harcama" to "Gelir" to log a side job, bonus, gift, refund, sale or investment return. It is added to what is left for that period, appears next to the salary on the summary card, and shows in green with a plus sign everywhere, so it never looks like spending.
 - **Recurring expenses.** Choose "every month" while adding an expense, and rent, bills or subscriptions are added automatically on the same day each month, including months the app was not opened.
 - **Undo.** Swipe an expense away to delete it, and undo if it was a mistake.
-- **Excel export.** Save every expense and a per-period summary as an `.xlsx` file.
+- **Excel export.** Save an `.xlsx` file with a sheet of expenses, a sheet of extra income, and a per-period summary of salary, extra income, spending and what was left.
 - **Light and dark themes**, following the system or set manually.
 - **Private by design.** No account and no server; all data stays on the device in a local SQLite database.
 
 <p align="center">
-  <img src="docs/screenshots/categories.png" width="200" alt="Spending by category">
+  <img src="docs/screenshots/add-expense.png" width="200" alt="Adding an expense">
+  <img src="docs/screenshots/categories.png" width="200" alt="Spending by category and extra income for a period">
   <img src="docs/screenshots/summary-dark.png" width="200" alt="Summary screen in dark theme">
 </p>
 
@@ -79,10 +80,10 @@ The release build is signed with the debug key, which is fine for installing on 
 lib/
 ├── core/            # Dates, money formatting, theme and colors
 ├── data/            # SQLite database and repositories
-├── domain/          # Expenses, categories, pay periods, recurring expenses
+├── domain/          # Expenses, incomes, categories, pay periods, recurring expenses
 ├── features/
 │   ├── calendar/    # Month view with daily totals
-│   ├── expense/     # Add and edit expense sheet
+│   ├── entry/       # Add and edit sheet for expenses and income
 │   ├── export/      # Excel export
 │   ├── home/        # Summary tab and full period list
 │   ├── onboarding/  # First run: name, salary and payday
